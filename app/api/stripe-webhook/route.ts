@@ -80,6 +80,10 @@ export async function POST(req: NextRequest) {
 }
 
 function extractPhoneFromCheckoutSession(session: Stripe.Checkout.Session): string | null {
+  const nativePhone = session.customer_details?.phone
+  if (nativePhone) {
+    return nativePhone.replace(/[^\d+]/g, '')
+  }
   const field = session.custom_fields?.find((f) => f.key === 'phone_number' || f.key === 'phone')
   const raw = field?.text?.value
   if (!raw) return null
